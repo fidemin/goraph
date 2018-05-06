@@ -24,6 +24,7 @@ func TestGraph(t *testing.T) {
 	graph.AddNode(node2)
 
 	node3 := NewNode(3)
+	node3.AddEdge(NewEdge(2, float64(5)))
 	node3.AddEdge(NewEdge(4, float64(2)))
 	node3.AddEdge(NewEdge(5, float64(6)))
 	graph.AddNode(node3)
@@ -37,7 +38,12 @@ func TestGraph(t *testing.T) {
 	graph.AddNode(node5)
 	assert.Equal(float64(2), graph.nodes[0].adjNodes[1].weight)
 
-	distance, preNode := ShortPathDijkstra(graph, 0)
-	t.Log("preNode: ", preNode)
-	t.Log("distance: ", distance)
+	/*
+		distance, preNode := ShortPathDijkstra(graph, 0)
+		t.Log("preNode: ", preNode)
+		t.Log("distance: ", distance)
+	*/
+
+	allDistance := ShortestPathsFloyd(graph)
+	PrintMatrix(allDistance)
 }
