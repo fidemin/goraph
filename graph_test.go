@@ -7,42 +7,30 @@ import (
 
 func TestGraph(t *testing.T) {
 	assert := assert.New(t)
-	graph := NewGraph()
+	graph := NewGraph(GraphTypeDirect)
 
-	node0 := NewNode(0)
-	node0.AddEdge(NewEdge(1, float64(2)))
-	node0.AddEdge(NewEdge(2, float64(4)))
-	graph.AddNode(node0)
+	// new
+	graph.AddEdge(0, 1, float64(2))
+	graph.AddEdge(0, 2, float64(4))
+	graph.AddEdge(1, 2, float64(1))
 
-	node1 := NewNode(1)
-	node1.AddEdge(NewEdge(2, float64(1)))
-	graph.AddNode(node1)
+	graph.AddEdge(2, 3, float64(7))
+	graph.AddEdge(2, 0, float64(4))
 
-	node2 := NewNode(2)
-	node2.AddEdge(NewEdge(3, float64(7)))
-	node2.AddEdge(NewEdge(0, float64(4)))
-	graph.AddNode(node2)
+	graph.AddEdge(3, 2, float64(5))
+	graph.AddEdge(3, 4, float64(2))
+	graph.AddEdge(3, 5, float64(6))
 
-	node3 := NewNode(3)
-	node3.AddEdge(NewEdge(2, float64(5)))
-	node3.AddEdge(NewEdge(4, float64(2)))
-	node3.AddEdge(NewEdge(5, float64(6)))
-	graph.AddNode(node3)
+	graph.AddEdge(4, 5, float64(3))
 
-	node4 := NewNode(4)
-	node4.AddEdge(NewEdge(5, float64(3)))
-	graph.AddNode(node4)
+	// new
+	graph.AddEdge(5, 3, float64(6))
 
-	node5 := NewNode(5)
-	node5.AddEdge(NewEdge(3, float64(6)))
-	graph.AddNode(node5)
 	assert.Equal(float64(2), graph.nodes[0].adjNodes[1].weight)
 
-	/*
-		distance, preNode := ShortPathDijkstra(graph, 0)
-		t.Log("preNode: ", preNode)
-		t.Log("distance: ", distance)
-	*/
+	distance, preNode := ShortPathDijkstra(graph, 0)
+	t.Log("preNode: ", preNode)
+	t.Log("distance: ", distance)
 
 	allDistance := ShortestPathsFloyd(graph)
 	PrintMatrix(allDistance)

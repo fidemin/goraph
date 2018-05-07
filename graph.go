@@ -1,18 +1,13 @@
 package goraph
 
-import (
-	"errors"
-	"fmt"
-)
-
 type Edge struct {
 	toNodeID int
 	weight   float64
 }
 
-func NewEdge(nodeID int, weight float64) Edge {
+func NewEdge(toNodeID int, weight float64) Edge {
 	return Edge{
-		toNodeID: nodeID,
+		toNodeID: toNodeID,
 		weight:   weight,
 	}
 }
@@ -33,25 +28,42 @@ func (g *Node) AddEdge(edge Edge) {
 	g.adjNodes[edge.toNodeID] = edge
 }
 
+type GraphType int
+
+const (
+	GraphTypeDirect GraphType = iota
+	GraphTypeUndirect
+)
+
 type Graph struct {
-	nodes map[int]*Node
+	nodes     map[int]*Node
+	graphType GraphType
 }
 
-func NewGraph() *Graph {
+func NewGraph(graphType GraphType) *Graph {
 	g := new(Graph)
 	g.nodes = make(map[int]*Node)
+	g.graphType = graphType
 	return g
 }
 
-func (g *Graph) AddNode(node *Node) error {
-	if _, ok := g.nodes[node.nodeID]; ok {
-		return errors.New(fmt.Sprintf("node with id %d already exists", node.nodeID))
-	}
+func (g *Graph) addEdgeInternally(fromNodeID int, toNodeID int, weight float64) {
+	newEdge := NewEdge(toNodeID, weight)
 
-	if node == nil {
-		return errors.New("node is nil")
+	fromNode, ok := g.nodes[fromNodeID]
+	if !ok {
+		newNode := NewNode(fromNodeID)
+		newNode.AddEdge(newEdge)
+		g.nodes[fromNodeID] = newNode
+	} else {
+		fromNode.AddEdge(newEdge)
 	}
+}
 
-	g.nodes[node.nodeID] = node
-	return nil
+func (g *Graph) AddEdge(fromNodeID int, toNodeID int, weight float64) {
+	g.addEdgeInternally(fromNodeID, toNodeID, weight)
+
+	if g.graphType == GraphTypeUndirect {
+		g.addEdgeInternally(toNodeID, fromNodeID, weight)
+	}
 }
