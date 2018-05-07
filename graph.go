@@ -1,5 +1,9 @@
 package goraph
 
+import (
+	"sort"
+)
+
 type Edge struct {
 	toNodeID int
 	weight   float64
@@ -66,4 +70,58 @@ func (g *Graph) AddEdge(fromNodeID int, toNodeID int, weight float64) {
 	if g.graphType == GraphTypeUndirect {
 		g.addEdgeInternally(toNodeID, fromNodeID, weight)
 	}
+}
+
+type HeapEdge struct {
+	fromNodeID int
+	toNodeID   int
+	weight     float64
+}
+
+func NewHeapEdge(fromNodeID, toNodeID int, weight float64) HeapEdge {
+	e := HeapEdge{
+		fromNodeID: fromNodeID,
+		toNodeID:   toNodeID,
+		weight:     weight,
+	}
+	return e
+}
+
+type HeapEdgeArr []HeapEdge
+
+func NewHeapEdgeArr() HeapEdgeArr {
+	h := make(HeapEdgeArr, 0)
+	return h
+}
+
+func (h *HeapEdgeArr) Queue(node HeapEdge) {
+	*h = append(*h, node)
+	sort.Sort(*h)
+}
+
+func (h *HeapEdgeArr) DeQueue() HeapEdge {
+	result := (*h)[0]
+	*h = (*h)[1:h.Len()]
+	return result
+}
+
+func (h *HeapEdgeArr) IsEmpty() bool {
+	return h.Len() == 0
+}
+
+// For Sort interface
+func (h HeapEdgeArr) Len() int {
+	return len(h)
+}
+
+// For Sort interface
+func (h HeapEdgeArr) Less(i, j int) bool {
+	return h[i].weight < h[j].weight
+}
+
+// For Sort interface
+func (h HeapEdgeArr) Swap(i, j int) {
+	tmp := h[i]
+	h[i] = h[j]
+	h[j] = tmp
 }
